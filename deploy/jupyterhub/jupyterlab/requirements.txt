@@ -1,0 +1,4 @@
+# left out ml libraries because of storage constraints on our server
+matplotlib
+numpy
+pandas

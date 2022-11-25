@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  jupyterlab:
+    build: jupyterlab
+    image: jupyterlab_img
+    container_name: jupyterlab-throaway
+    network_mode: none
+    command: echo
+
+  hub-db:
+    image: postgres:alpine3.16
+    container_name: jupyterhub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: ${DB_VOLUME_CONTAINER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - "db:${DB_VOLUME_CONTAINER}"
+
+  hub:
+    depends_on:
+      - hub-db
+    links:
+      - hub-db
+    build: jupyterhub
+    restart: unless-stopped
+    container_name: jupyterhub
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "data:${DATA_VOLUME_CONTAINER}"
+    environment:
+      DOCKER_JUPYTER_IMAGE: jupyterlab_img
+      DOCKER_NETWORK_NAME: ${DOCKER_NETWORK_NAME}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: hub-db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8000:8000"
+      - "8081:8081"
+
+volumes:
+  data:
+    name: jupyterhub_data
+    driver: local
+  db:
+    name: jupyterhub_db
+    driver: local
+
+networks:
+  default:
+    name: ${DOCKER_NETWORK_NAME}
