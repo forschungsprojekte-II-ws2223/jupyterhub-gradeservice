@@ -13,3 +13,8 @@ jobs:
         cd jupyterhub_docker
         docker-compose pull
         docker-compose up -d
+
+    - name: Build the moodle_docker Docker image
+      run: |
+        cd moodle_docker
+        docker-compose up -d
