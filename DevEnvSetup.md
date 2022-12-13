@@ -64,19 +64,19 @@ After you have successfuly set up git, you can clone the repository into the mod
 Open the VS Code command line by pressing `Ctrl+J` (Windows, Linux) or `⌘+J` (MacOS) and run the following commands.
 
 ```
-cd /bitnami/moodle/mod/jupyter
+cd /bitnami/moodle/mod/
 ```
 
 if you are using ssh for authenticating with git:
 
 ```
-git clone git@sopra.informatik.uni-stuttgart.de:kib3-students-project/moodle-mod_jupyter.git ./jupyter
+git clone git@github.com:forschungsprojekte-II-ws2223/moodle-mod_jupyter.git ./jupyter
 ```
 
 if you are using http:
 
 ```
-git clone https://sopra.informatik.uni-stuttgart.de/kib3-students-project/moodle-mod_jupyter.git ./jupyter
+git clone https://github.com/forschungsprojekte-II-ws2223/moodle-mod_jupyter.git ./jupyter
 ```
 
 Change to the plugin folder and install the php dependencies:
