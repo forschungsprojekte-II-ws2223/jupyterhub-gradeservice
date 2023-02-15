@@ -25,6 +25,7 @@ c.DockerSpawner.network_name = network_name
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 
 c.JupyterHub.hub_ip = 'jupyterhub'
+c.JupyterHub.hub_port = 8080
 
 c.Spawner.args = [f'--NotebookApp.allow_origin=*']
 c.JupyterHub.tornado_settings = {
@@ -41,7 +42,7 @@ c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
     'jupyterhub_cookie_secret')
 
 # Redirect to JupyterLab, instead of the plain Jupyter notebook
-c.Spawner.default_url = '/lab'
+#c.Spawner.default_url = '/lab'
 
 # Idle culler setup:
 # For further information about the available settings for idle culler check the following link:
@@ -57,6 +58,17 @@ c.JupyterHub.load_roles = [
         ],
         # assignment of role's permissions to:
         "services": ["jupyterhub-idle-culler-service"],
+    },
+    {
+        "name": "service-role",
+        "scopes": [
+            "admin:users",
+            "admin:servers",
+            "access:servers",
+        ],
+        "services": [
+            "service-admin",
+        ],
     }
 ]
 c.JupyterHub.services = [
@@ -67,7 +79,11 @@ c.JupyterHub.services = [
             "-m", "jupyterhub_idle_culler",
             "--timeout=3600",
         ],
-    }
+    },
+    {
+        "name": "service-admin",
+        "api_token": "secret-token",
+    },
 ]
 
 # Database setup

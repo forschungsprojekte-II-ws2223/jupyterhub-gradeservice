@@ -1,8 +1,9 @@
-matplotlib
-numpy
-pandas
-scikit-learn
-scipy
-tensorflow
-nbgitpuller==1.1.0
+# We don't need the commented out packages for now..
+# matplotlib
+# numpy
+# pandas
+# scikit-learn
+# scipy
+# tensorflow
+nbgitpuller
 jupyterlab-language-pack-de-DE
