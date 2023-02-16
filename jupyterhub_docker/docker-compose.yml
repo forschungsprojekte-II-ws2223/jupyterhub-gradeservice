@@ -1,7 +1,7 @@
 services:
   hub-db:
     image: postgres:alpine3.17
-    #container_name: jupyterhub-db
+    container_name: jupyterhub-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -16,8 +16,8 @@ services:
     links:
       - hub-db
     build: .
-    #restart: unless-stopped
-    #container_name: jupyterhub
+    restart: unless-stopped
+    container_name: jupyterhub # container name needs to match c.JupyterHub.hub_ip in jupyterhub_config.py
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "data:${DATA_VOLUME_CONTAINER}"
@@ -30,7 +30,6 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8000:8000"
-      - "8081:8081"
 
 volumes:
   data:
