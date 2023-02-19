@@ -61,6 +61,7 @@ c.JupyterHub.load_roles = [
     },
     {
         "name": "service-role",
+        # TODO: better scopes (not so much power for one token) 
         "scopes": [
             "admin:users",
             "admin:servers",
@@ -82,7 +83,7 @@ c.JupyterHub.services = [
     },
     {
         "name": "service-admin",
-        "api_token": "secret-token",
+        "api_token": os.environ['API_TOKEN'],
     },
 ]
 

@@ -28,6 +28,7 @@ services:
       POSTGRES_HOST: hub-db
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      API_TOKEN: ${API_TOKEN}
     ports:
       - "8000:8000"
 
