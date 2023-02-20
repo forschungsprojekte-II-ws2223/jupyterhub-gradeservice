@@ -16,8 +16,8 @@ services:
     links:
       - hub-db
     build: .
-    restart: unless-stopped
     container_name: jupyterhub # container name needs to match c.JupyterHub.hub_ip in jupyterhub_config.py
+    restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "data:${DATA_VOLUME_CONTAINER}"
