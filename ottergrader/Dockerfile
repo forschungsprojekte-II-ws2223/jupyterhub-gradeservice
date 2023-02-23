@@ -1,6 +1,9 @@
-FROM ubuntu:18.04
+FROM python:3.9
 
-RUN pip install ottergrader \
-    requests
+ADD app.py ./
 
-COPY ./api.py .
+RUN pip install otter-grader \
+    requests \
+    flask
+
+CMD [ "python", "app.py" ], 
