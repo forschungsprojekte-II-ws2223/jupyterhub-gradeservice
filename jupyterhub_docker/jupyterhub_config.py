@@ -15,14 +15,14 @@
 import os
 import sys
 
-c = get_config() # pyright: reportUndefinedVariable=false
+c = get_config()  # pyright: reportUndefinedVariable=false
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 c.DockerSpawner.image = os.environ['DOCKER_JUPYTER_IMAGE']
 
 network_name = os.environ['DOCKER_NETWORK_NAME']
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
-c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
+c.DockerSpawner.extra_host_config = {'network_mode': network_name}
 
 c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
@@ -38,8 +38,8 @@ c.JupyterHub.tornado_settings = {
 # Persist hub data on volume mounted inside container
 data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
 
-c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
-    'jupyterhub_cookie_secret')
+c.JupyterHub.cookie_secret_file = os.path.join(
+    data_dir, 'jupyterhub_cookie_secret')
 
 # Redirect to JupyterLab, instead of the plain Jupyter notebook
 #c.Spawner.default_url = '/lab'
@@ -61,7 +61,7 @@ c.JupyterHub.load_roles = [
     },
     {
         "name": "service-role",
-        # TODO: better scopes (not so much power for one token) 
+        # TODO: better scopes (not so much power for one token)
         "scopes": [
             "admin:users",
             "admin:servers",
@@ -99,7 +99,7 @@ c.JupyterHub.db_url = 'postgresql://postgres:{password}@{host}/{db}'.format(
 
 # JWT Authenticator Setup
 # JSONWebTokenLocalAuthenticator provides local user creation
-c.LocalAuthenticator.create_system_users=True
+c.LocalAuthenticator.create_system_users = True
 c.JupyterHub.authenticator_class = 'jwtauthenticator.jwtauthenticator.JSONWebTokenLocalAuthenticator'
 # The secrect key used to generate the given token
 c.JSONWebTokenAuthenticator.secret = os.environ['JWT_SECRET']
