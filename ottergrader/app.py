@@ -1,5 +1,9 @@
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+import base64
+import os.path
+from datetime import date
 
 app = Flask(__name__)
 
@@ -24,6 +28,30 @@ def add_country():
         countries.append(country)
         return country, 201
     return {"error": "Request must be JSON"}, 415
+
+@app.route('/upload', methods=['POST'])
+def getting_file():
+    # getting base64 string over https request
+    base64_string = request.json['base64String']
+
+    # remove URI prefix to get base64 data
+    base64_data = base64_string.split(',')
+    ipynb_data = base64.b64decode(base64_data[1])
+
+    # getting system time
+    today = date.today
+    d4 = today.strftime("%b-%d-%Y")
+
+    # save file in container
+    with open(d4 + '.ipynb', 'wb') as f:
+        f.write(ipynb_data)
+
+    return Flask.jsonify({'response': ipynb_data})
+
+# otter assign
+# otter grade -> GET
+#
+# otter generate (not really necessary because it is invisibly done by otter assign)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
