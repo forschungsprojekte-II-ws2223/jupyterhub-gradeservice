@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  dummy:
+    build: dummy
+    image: dummy
+    container_name: "dummy"
+    ports:
+      - "5001:5001"
+
+  server:
+    build: server
+    image: otterapi
+    container_name: otterapi
+    ports:
+      - "5000:5000"
