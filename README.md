@@ -44,7 +44,7 @@ The JupyterHub uses a json web token [authenticator](https://github.com/izihawa/
   In the 'verify signature' field the secret can stay 'your-256-bit-secret' as it is (the secret should match the one in the [environment file](.env)).
   The 'secret base64 encoded' should NOT be checked.
 - You can now add the token as a query parameter to the address that your JupyterHub is running on.  
-  For example: http://127.0.0.1:8000/?auth_token={your token here}
+  For example: <http://127.0.0.1:8000/?auth_token=>{your token here}
 
 ## Manage dependencies
 
