@@ -24,6 +24,13 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 c.DockerSpawner.extra_host_config = {'network_mode': network_name}
 
+notebook_dir = os.environ.get("DOCKER_NOTEBOOK_DIR") or "/home/jovyan/work"
+c.DockerSpawner.notebook_dir = notebook_dir
+c.DockerSpawner.volumes = {"jupyterhub-user-{username}": notebook_dir}
+
+c.DockerSpawner.remove = True
+#c.Spawner.mem_limit = '2G'
+
 c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
 
