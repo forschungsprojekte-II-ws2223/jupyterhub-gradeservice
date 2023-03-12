@@ -4,5 +4,5 @@ pandas
 scikit-learn
 scipy
 tensorflow
-nbgitpuller==1.1.0
+nbgitpuller
 jupyterlab-language-pack-de-DE
