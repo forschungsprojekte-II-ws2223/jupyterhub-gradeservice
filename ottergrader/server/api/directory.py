@@ -18,6 +18,9 @@ def check_course_dir(course):
         logging.info('Created {} directory'.format(course))
         os.chdir('../')
         logging.info("Current working dir : %s" % os.getcwd())
+        return
+    os.chdir('../')
+    logging.info("Current working dir : %s" % os.getcwd())
 
 def check_activity_dir(course, activity):
     os.chdir('submissions/{}'.format(course))
@@ -26,7 +29,14 @@ def check_activity_dir(course, activity):
         logging.info('Created {} directory'.format(activity))
         os.chdir('../../')
         logging.info("Current working dir : %s" % os.getcwd())
+        return
+    os.chdir('../../')
+    logging.info("Current working dir : %s" % os.getcwd())
 
 def activity_dir(course, activity):
     os.chdir('submissions/{}/{}'.format(course, activity))
+    return os.getcwd()
+
+def defaultDir():
+    os.chdir('../../../')
     return os.getcwd()

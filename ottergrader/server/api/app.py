@@ -73,9 +73,11 @@ def upload_files():
 
             file.save(os.path.join(directory.activity_dir(course, activity), secure_fname))
 
-            logging.info('Upload is successful')
+            logging.info('Upload is successful in %s', os.getcwd())
 
             flash('File uploaded successfully')
+            directory.defaultDir()
+            logging.info('Now in %s', os.getcwd())
             return {"file": "File uploaded successfully"}, 201
         else:
             logging.info('Invalid file extension')
