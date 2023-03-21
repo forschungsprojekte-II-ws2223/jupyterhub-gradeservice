@@ -5,7 +5,6 @@ import os.path
 
 import directory
 
-from directory import check_submission_dir
 from flask import Flask, request, jsonify, send_from_directory, render_template, redirect, flash
 from werkzeug.utils import secure_filename
 from datetime import date
@@ -19,7 +18,7 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(funcName)s:
 app = Flask(__name__)
 app.secret_key = "somesecretkey"
  
-app.config['ALLOWED_EXTENSIONS'] = ['.jpg', '.png']
+app.config['ALLOWED_EXTENSIONS'] = ['.jpg', '.png', '.ipynb']
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 
 @app.route('/upload_b64', methods=['POST'])
@@ -53,6 +52,10 @@ def upload_files():
     file = request.files['file']
     # obtaining the name of the destination file
     filename = file.filename
+
+    course = request.form['course']
+    activity = request.form['activity']
+
     if filename == '':
         logging.info('Invalid file')
         flash('No file selected for uploading')
@@ -65,7 +68,10 @@ def upload_files():
 
             logging.info('Secure filename is= [%s]', secure_fname)
 
-            file.save(os.path.join(directory.submission_dir(), secure_fname))
+            directory.check_course_dir(course)
+            directory.check_activity_dir(course, activity)
+
+            file.save(os.path.join(directory.activity_dir(course, activity), secure_fname))
 
             logging.info('Upload is successful')
 
@@ -77,7 +83,7 @@ def upload_files():
             return {"Error": "File type not allowed"}, 404
 
 if __name__ == '__main__':
-    check_submission_dir()
+    directory.check_submission_dir()
 
     server_port = os.environ.get('PORT', '5000')
     app.run(debug=False, port=server_port, host="0.0.0.0")

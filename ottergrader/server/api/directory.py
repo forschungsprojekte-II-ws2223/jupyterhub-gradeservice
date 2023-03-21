@@ -10,3 +10,23 @@ def check_submission_dir():
 
 def submission_dir():
     return SUBMISSION_FOLDER
+
+def check_course_dir(course):
+    os.chdir('submissions')
+    if not os.path.exists(os.path.join(os.getcwd(), course)):
+        os.makedirs(os.path.join(os.getcwd(), course), exist_ok=True)
+        logging.info('Created {} directory'.format(course))
+        os.chdir('../')
+        logging.info("Current working dir : %s" % os.getcwd())
+
+def check_activity_dir(course, activity):
+    os.chdir('submissions/{}'.format(course))
+    if not os.path.exists(os.path.join(os.getcwd(), activity)):
+        os.makedirs(os.path.join(os.getcwd(), activity), exist_ok=True)
+        logging.info('Created {} directory'.format(activity))
+        os.chdir('../../')
+        logging.info("Current working dir : %s" % os.getcwd())
+
+def activity_dir(course, activity):
+    os.chdir('submissions/{}/{}'.format(course, activity))
+    return os.getcwd()
