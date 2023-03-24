@@ -1,3 +1,5 @@
 fastapi
 uvicorn[standard]
 otter-grader
+python-multipart
+nbconvert
