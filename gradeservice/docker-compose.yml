@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  src:
+      build: .
+      image: gradeservice
+      container_name: "gradeservice"
+      ports:
+        - "5000:5000"
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+      stdin_open: true
+      tty: true
+
