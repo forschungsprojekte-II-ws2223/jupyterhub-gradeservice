@@ -4,7 +4,6 @@ from typing import Annotated
 from fastapi import FastAPI, File, UploadFile
 
 import os
-import directory
 
 app = FastAPI()
 
@@ -17,9 +16,11 @@ async def read_root():
             "output": output,
             }
 
+
 @app.get("/items/{item_id}")
 async def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
+
 
 @app.post("/{course_id}/{activity_id}")
 async def create_upload_file(course_id: int, activity_id: int, file: UploadFile):
