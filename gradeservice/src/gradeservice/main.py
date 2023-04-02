@@ -4,15 +4,6 @@ import os
 
 app = FastAPI()
 
-
-@app.get("/")
-async def read_root():
-    stream = os.popen('otter --version')
-    output = stream.read()
-    return {"Hello": "World",
-            "output": output,
-            }
-
 @app.post("/{course_id}/{activity_id}")
 async def create_upload_file(course_id: int, activity_id: int, file: UploadFile):
     folder_path = f'submissions/{course_id}/{activity_id}'
