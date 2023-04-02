@@ -16,5 +16,5 @@ conda env create -f environment.yml
 Run the api with:
 
 ```sh
-uvicorn main:app --reload
+uvicorn src:app --reload
 ```
