@@ -1,17 +1,26 @@
+from fastapi import UploadFile
+
+import base64
 import subprocess
 import os
 
-def assign(path: str):
-    cmd = f'otter assign {path}/demo.ipynb {path}/dist'
-    return subprocess.run([cmd], shell=True, capture_output=True, text=True)
+async def create_assignment(course_id : int, activity_id: int, file: UploadFile):
+    folder_path = f'assignments/{course_id}/{activity_id}'
+    os.makedirs(folder_path)
 
-def grade():
+    contents = await file.read()
+    with open(f'{folder_path}/{file.filename}', 'wb') as f:
+        f.write(contents)
+
+    res = subprocess.run([f'otter assign {folder_path}/{file.filename} {folder_path}/dist'], shell=True, capture_output=True, text=True)
+
+    f = open(f'assignments/{course_id}/{activity_id}/dist/student/demo.ipynb')
+
+def get_assignment(course_id : int, activity_id: int):
+    if not os.path.exists(f'assignments/{course_id}/{activity_id}'):
+        return 0
+
     return 0
 
-
-
-def handle_new_assignment(course_id: int, activity_id: int):
-    try:
-        os.makedirs("123")
-    except OSError:
-        return "exists!s"
+def grade_assignment():
+    return 0
