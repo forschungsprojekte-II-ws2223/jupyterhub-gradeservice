@@ -1,2 +1,3 @@
-import gradeservice.otter as otter
 import os
+
+import gradeservice.otter as otter
