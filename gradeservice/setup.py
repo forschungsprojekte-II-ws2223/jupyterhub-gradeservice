@@ -11,7 +11,7 @@ dev_requires = get_requirements("dev")
 setup(
     name="gradeservice",
     package_dir = {"": "src"},
-    find_packages=find_packages("src"),
+    packages=find_packages("src"),
     python_requires=">=3.11",
     install_requires=install_requires,
     extras_require={"dev": dev_requires},

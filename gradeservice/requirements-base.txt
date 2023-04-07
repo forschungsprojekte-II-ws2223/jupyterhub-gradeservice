@@ -189,6 +189,8 @@ python-dateutil==2.8.2
     #   pandas
 python-dotenv==1.0.0
     # via uvicorn
+python-multipart==0.0.6
+    # via -r requirements-base.in
 python-on-whales==0.60.0
     # via otter-grader
 pytz==2023.3
