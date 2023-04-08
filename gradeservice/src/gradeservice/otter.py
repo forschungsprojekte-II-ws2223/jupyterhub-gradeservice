@@ -13,12 +13,16 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     with open(f"{folder_path}/{file.filename}", "wb") as f:
         f.write(contents)
 
+    await file.close()
+
     res = subprocess.run(
         [f"otter assign {folder_path}/{file.filename} {folder_path}/dist"],
         shell=True,
         capture_output=True,
         text=True,
     )
+
+    res.check_returncode()
 
     f = open(f"assignments/{course_id}/{activity_id}/dist/student/demo.ipynb")
 
