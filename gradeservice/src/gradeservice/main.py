@@ -1,43 +1,56 @@
-from fastapi import FastAPI, File, UploadFile
-
 import os
+
+from fastapi import FastAPI, HTTPException, UploadFile
+
+import gradeservice.otter as otter
 
 app = FastAPI()
 
 
-@app.post("/{course_id}/{activity_id}")
-async def create_upload_file(
-    course_id: int, activity_id: int, file: UploadFile, requirements: UploadFile
-):
-    folder_path = f"submissions/{course_id}/{activity_id}"
-    os.makedirs(folder_path, exist_ok=True)
-
-    filepath = f"{folder_path}/{file.filename}"
-    requirementspath = f"{folder_path}/{requirements.filename}"
-
+async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     try:
-        content = file.file.read()
-        with open(filepath, mode="wb") as f:
-            f.write(content)
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        file.file.close()
+        res = await otter.create_assignment(course_id, activity_id, file)
+    except OSError:
+        raise HTTPException(
+            status_code=400, detail=f"Activity {course_id}/{activity_id} already exists."
+        )
+    os.path.exists(123)
+    return {"message": res}
 
-    try:
-        content = requirements.file.read()
-        with open(requirementspath, mode="wb") as f:
-            f.write(content)
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        requirements.file.close()
 
-    stream = os.popen(f"otter assign {filepath} {folder_path}/dist")
-    output = stream.read()
-    stream.close
+# @app.post("/{course_id}/{activity_id}")
+# async def create_upload_file(
+#     course_id: int, activity_id: int, file: UploadFile, requirements: UploadFile
+# ):
+#     folder_path = f"submissions/{course_id}/{activity_id}"
+#     os.makedirs(folder_path, exist_ok=True)
 
-    return {"message": output}
+#     filepath = f"{folder_path}/{file.filename}"
+#     requirementspath = f"{folder_path}/{requirements.filename}"
+
+#     try:
+#         content = file.file.read()
+#         with open(filepath, mode="wb") as f:
+#             f.write(content)
+#     except Exception:
+#         return {"message": "There was an error uploading the file"}
+#     finally:
+#         file.file.close()
+
+#     try:
+#         content = requirements.file.read()
+#         with open(requirementspath, mode="wb") as f:
+#             f.write(content)
+#     except Exception:
+#         return {"message": "There was an error uploading the file"}
+#     finally:
+#         requirements.file.close()
+
+#     stream = os.popen(f"otter assign {filepath} {folder_path}/dist")
+#     output = stream.read()
+#     stream.close
+
+#     return {"message": output}
 
 
 @app.post("/student/{course_id}/{activity_id}")
