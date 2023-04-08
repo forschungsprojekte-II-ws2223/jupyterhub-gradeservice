@@ -37,6 +37,7 @@ async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile)
     return {"message": "Submitted"}
 
 
+# Needs to be tested
 @app.get("/grade/{course_id}/{activity_id}")
 async def grade(course_id: int, activity_id: int):
     grading_path = f"submissions/{course_id}/{activity_id}/dist/autograder/demo-autograder"
