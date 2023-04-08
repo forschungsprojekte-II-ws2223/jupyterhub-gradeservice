@@ -1,26 +1,29 @@
 import base64
 import os
+import pathlib
 import subprocess
 
 from fastapi import UploadFile
 
 
 async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
-    folder_path = f"assignments/{course_id}/{activity_id}"
-    os.makedirs(folder_path)
+    path = pathlib.Path("assignments" , course_id, activity_id)
+    os.makedirs(path)
 
+    file_path = path.joinpath(file.filename)
     contents = await file.read()
-    with open(f"{folder_path}/{file.filename}", "wb") as f:
+    with open(file_path, "wb") as f:
         f.write(contents)
+    await file.close()
 
     res = subprocess.run(
-        [f"otter assign {folder_path}/{file.filename} {folder_path}/dist"],
+        [f"otter assign {file_path} {path}"],
         shell=True,
         capture_output=True,
         text=True,
     )
 
-    f = open(f"assignments/{course_id}/{activity_id}/dist/student/demo.ipynb")
+    f = open(f"assignments/{course_id}/{activity_id}/dist/student/demo.ipynb", "r")
 
 
 def get_assignment(course_id: int, activity_id: int):
