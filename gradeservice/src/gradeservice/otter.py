@@ -1,25 +1,32 @@
-import base64
 import os
 import subprocess
 from pathlib import Path
 from subprocess import CalledProcessError
 
 from fastapi import APIRouter, HTTPException, UploadFile
+from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 router = APIRouter()
 
-@router.post("/{course_id}/{activity_id}")
+
+@router.post("/{course_id}/{activity_id}", status_code=HTTP_201_CREATED)
 async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
-    path = Path(f'assignments/{course_id}/{activity_id}')
+    path = Path(f"assignments/{course_id}/{activity_id}")
 
     try:
         os.makedirs(path)
     except OSError:
-        raise HTTPException(status_code=400, detail=f"Activity {course_id}/{activity_id} already exists.")
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=f"Activity {course_id}/{activity_id} already exists.",
+        )
 
     file_path = path.joinpath(file.filename)
     if file_path.suffix != ".ipynb":
-        raise HTTPException(status_code=400, detail=f'The file {file.filename} is not a .ipynb file.')
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=f"The file {file.filename} is not a .ipynb file.",
+        )
 
     contents = await file.read()
 
@@ -38,6 +45,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
     return {"message": "success"}
 
+
 # Gets the assignment from student
 @router.post("/student/{course_id}/{activity_id}")
 async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile):
@@ -46,8 +54,9 @@ async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile)
 
     submissionpath = f"{submission_path}/{file.filename}"
 
+    content = await file.read()
+
     try:
-        content = file.file.read()
         with open(submissionpath, mode="wb") as f:
             f.write(content)
     except Exception:

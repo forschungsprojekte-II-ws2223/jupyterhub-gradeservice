@@ -6,6 +6,7 @@ app = FastAPI()
 
 app.include_router(otter.router)
 
+
 @app.get("/")
 async def root():
     return {"msg": "Hello World"}
