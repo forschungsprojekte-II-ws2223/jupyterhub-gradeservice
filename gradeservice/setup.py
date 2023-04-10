@@ -9,7 +9,6 @@ def get_requirements(env):
 install_requires = get_requirements("base")
 dev_requires = get_requirements("dev")
 
-
 setup(
     name="gradeservice",
     package_dir={"": "src"},
