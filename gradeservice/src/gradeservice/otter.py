@@ -38,13 +38,14 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
         try:
             subprocess.run(
-                [f"otter assign -v {file_path} {path}"],
+                [f"otter assign {file_path} {path}"],
                 shell=True,
                 capture_output=True,
                 check=True,
+                text=True,
             )
         except CalledProcessError as e:
-            raise HTTPException(status_code=400, detail=e.stderr)
+            raise HTTPException(status_code=400, detail=f"Failed to create assignment: {e.stderr}")
 
         with open(path.joinpath("student", file.filename), "rb") as fp:
             s = base64.b64encode(fp.read())
@@ -52,7 +53,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         shutil.rmtree(path)
         raise
 
-    return {"message": s}
+    return {file.filename: s}
 
 
 # Gets the assignment from student
