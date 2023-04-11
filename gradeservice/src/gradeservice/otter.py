@@ -77,17 +77,23 @@ async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile)
     return {"message": "success"}
 
 
-# grades the submissions, needs to be tested
+# grades the submissions
 @router.get("/grade/{course_id}/{activity_id}")
 async def grade(course_id: int, activity_id: int):
     grading_path = f"assignments/{course_id}/{activity_id}/autograder/demo-autograder"
     files_path = f"assignments/{course_id}/{activity_id}/submissions"
 
-    await subprocess.run(
-        [f"otter grade -p {files_path} -a {grading_path}_*.zip --pdfs -vz"],
-        shell=True,
-        capture_output=True,
-        check=True,
-    )
+    try:
+        result = subprocess.run(
+            [f"otter grade -p {files_path} -a {grading_path}_*.zip --pdfs -v"],
+            shell=True,
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except CalledProcessError as e:
+        raise HTTPException(status_code=400, detail=f"Failed to grade: {e.stderr}")
 
-    return {"message": "graded"}
+    print(result)
+
+    return {"message": "successfully graded"}
