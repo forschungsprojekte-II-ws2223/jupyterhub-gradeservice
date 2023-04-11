@@ -144,6 +144,8 @@ packaging==23.0
     #   sphinx
 pandas==1.5.3
     # via otter-grader
+pandoc==2.3
+    # via -r requirements-base.in
 pandocfilters==1.5.0
     # via nbconvert
 parso==0.8.3
@@ -154,6 +156,10 @@ pickleshare==0.7.5
     # via ipython
 platformdirs==3.2.0
     # via jupyter-core
+plumbum==1.8.1
+    # via pandoc
+ply==3.11
+    # via pandoc
 prompt-toolkit==3.0.38
     # via ipython
 protobuf==4.22.1

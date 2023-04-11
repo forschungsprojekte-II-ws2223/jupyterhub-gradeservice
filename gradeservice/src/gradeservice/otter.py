@@ -59,7 +59,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 # Gets the assignment from student
 @router.post("/student/{course_id}/{activity_id}")
 async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile):
-    submission_path = f"assignment/{course_id}/{activity_id}/submissions"
+    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions")
     os.makedirs(submission_path, exist_ok=True)
 
     file_path = submission_path.joinpath(file.filename)
@@ -80,10 +80,14 @@ async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile)
 # grades the submissions, needs to be tested
 @router.get("/grade/{course_id}/{activity_id}")
 async def grade(course_id: int, activity_id: int):
-    grading_path = f"submissions/{course_id}/{activity_id}/dist/autograder/demo-autograder"
-    files_path = f"submissions/{course_id}/{activity_id}/submissions"
+    grading_path = f"assignments/{course_id}/{activity_id}/autograder/demo-autograder"
+    files_path = f"assignments/{course_id}/{activity_id}/submissions"
 
-    stream = os.popen(f"otter grade -p {files_path} -a {grading_path}_*.zip --pdfs -v")
-    stream.close
+    await subprocess.run(
+        [f"otter grade -p {files_path} -a {grading_path}_*.zip --pdfs -vz"],
+        shell=True,
+        capture_output=True,
+        check=True,
+    )
 
     return {"message": "graded"}
