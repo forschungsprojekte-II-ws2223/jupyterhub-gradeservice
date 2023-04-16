@@ -6,6 +6,7 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 from fastapi import APIRouter, HTTPException, UploadFile
+from otter.api import grade_submission
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 router = APIRouter()
@@ -56,44 +57,31 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     return {file.filename: s}
 
 
-# Gets the assignment from student
-@router.post("/student/{course_id}/{activity_id}")
-async def submit_upload_file(course_id: int, activity_id: int, file: UploadFile):
-    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions")
-    os.makedirs(submission_path, exist_ok=True)
+@router.post("/{course_id}/{activity_id}/{student_id}")
+async def submit_upload_file(course_id: int, activity_id: int, student_id: int, file: UploadFile):
+    path = Path(f"assignments/{course_id}/{activity_id}")
 
-    file_path = submission_path.joinpath(file.filename)
+    if not path.exists():
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=f"Activity {course_id}/{activity_id} doesn't exist.",
+        )
+
+    submission_path = path.joinpath("submissions", str(student_id))
+    os.makedirs(submission_path, exist_ok=True)
 
     content = await file.read()
 
-    try:
-        with open(file_path, mode="wb") as f:
-            f.write(content)
-    except HTTPException:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Could not read file content")
-    finally:
-        file.file.close()
+    submission_file_path = submission_path.joinpath(file.filename)
+
+    with open(submission_file_path, mode="wb") as f:
+        f.write(content)
+
+    res = grade_submission(
+        submission_file_path,
+        list(path.joinpath("autograder").glob("*.zip"))[0],
+    )
+
+    print(res)
 
     return {"message": "success"}
-
-
-# grades the submissions
-@router.get("/grade/{course_id}/{activity_id}")
-async def grade(course_id: int, activity_id: int):
-    grading_path = f"assignments/{course_id}/{activity_id}/autograder/demo-autograder"
-    files_path = f"assignments/{course_id}/{activity_id}/submissions"
-
-    try:
-        result = subprocess.run(
-            [f"otter grade -p {files_path} -a {grading_path}_*.zip --pdfs -v"],
-            shell=True,
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except CalledProcessError as e:
-        raise HTTPException(status_code=400, detail=f"Failed to grade: {e.stderr}")
-
-    print(result)
-
-    return {"message": "successfully graded"}
