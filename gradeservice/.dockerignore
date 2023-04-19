@@ -1,0 +1,7 @@
+# exclude directories
+tests/
+docker/
+# exclude all markdowns
+*.md
+# exlude all .in
+*.in

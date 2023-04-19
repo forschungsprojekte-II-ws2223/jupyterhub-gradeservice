@@ -4,8 +4,6 @@ RUN apt update && apt -y upgrade
 RUN apt-get install -y pandoc
 RUN apt-get install -y texlive-xetex texlive-fonts-recommended texlive-plain-generic
 
-RUN curl -sSL https://get.docker.com/ | sh
-
 WORKDIR /app
 
 COPY . .
