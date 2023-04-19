@@ -6,7 +6,8 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 from fastapi import APIRouter, HTTPException, UploadFile
-from otter.api import grade_submission
+
+# from otter.api import grade_submission
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 router = APIRouter()
@@ -77,11 +78,30 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     with open(submission_file_path, mode="wb") as f:
         f.write(content)
 
-    res = grade_submission(
-        submission_file_path,
-        list(path.joinpath("autograder").glob("*.zip"))[0],
-    )
+    try:
+        subprocess.run(
+            [
+                f"otter run -a {path}/autograder/demo-autograder_*.zip {submission_file_path} -o {submission_path}"
+            ],
+            shell=True,
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except CalledProcessError as e:
+        raise HTTPException(status_code=400, detail=f"Failed to create assignment: {e.stderr}")
 
-    print(res)
+    # grade_submission does not produce a file, result can be given back with an response
+    #
+    # res = grade_submission(
+    #     submission_file_path,
+    #     list(path.joinpath("autograder").glob("*.zip"))[0],
+    # )
+    # print(res)
 
     return {"message": "success"}
+
+
+@router.get("/{course_id}/{activity_id}/{student_id}")
+async def get_graded_file(course_id: int, activity_id: int, student_id: int):
+    return {"message": "success return grade"}
