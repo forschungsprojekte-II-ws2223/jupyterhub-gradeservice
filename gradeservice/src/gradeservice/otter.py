@@ -102,6 +102,32 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     return {"message": "success"}
 
 
+# export notebook as pdf for manuel grading
+@router.get("/export/{course_id}/{activity_id}/{student_id}")
+async def get_manuel_grading(course_id: int, activity_id: int, student_id: int):
+    path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
+
+    if not path.exists():
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=f"Student {course_id}/{activity_id}/{student_id} doesn't exist.",
+        )
+
+    try:
+        subprocess.run(
+            [f"otter export --filtering --pagebreaks {path}/*.ipynb"],
+            shell=True,
+            capture_output=True,
+            check=True,
+            text=True,
+        )
+    except CalledProcessError as e:
+        raise HTTPException(status_code=400, detail=f"Failed to export: {e.stderr}")
+
+    return {"message": "success"}
+
+
+# Return grades TODO
 @router.get("/{course_id}/{activity_id}/{student_id}")
 async def get_graded_file(course_id: int, activity_id: int, student_id: int):
     return {"message": "success return grade"}
