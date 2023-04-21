@@ -102,7 +102,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     return {"message": "success"}
 
 
-# export notebook as pdf for manuel grading
+# export notebook as pdf for manual grading
 @router.get("/export/{course_id}/{activity_id}/{student_id}")
 async def get_manuel_grading(course_id: int, activity_id: int, student_id: int):
     path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")

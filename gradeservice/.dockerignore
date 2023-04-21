@@ -1,6 +1,12 @@
-# exclude directories
+assignments/
 tests/
-# exclude all markdowns
+docker/
+.pytest_cache/
+__pychache__/
+*.egg-info/
+
+Dockerfile
+*.yml
+*.toml
 *.md
-# exlude all .in
 *.in
