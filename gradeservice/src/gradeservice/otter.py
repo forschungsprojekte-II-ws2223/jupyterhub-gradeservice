@@ -81,7 +81,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     try:
         subprocess.run(
             [
-                f"otter run -a {path}/autograder/demo-autograder_*.zip {submission_file_path} -o {submission_path}"
+                f"otter grade -p {submission_file_path} -a {path}/autograder/demo-autograder_*.zip --pdfs -v"
             ],
             shell=True,
             capture_output=True,
@@ -89,40 +89,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
             text=True,
         )
     except CalledProcessError as e:
-        raise HTTPException(status_code=400, detail=f"Failed to create assignment: {e.stderr}")
-
-    # grade_submission does not produce a file, result can be given back with an response
-    #
-    # res = grade_submission(
-    #     submission_file_path,
-    #     list(path.joinpath("autograder").glob("*.zip"))[0],
-    # )
-    # print(res)
-
-    return {"message": "success"}
-
-
-# export notebook as pdf for manual grading
-@router.get("/export/{course_id}/{activity_id}/{student_id}")
-async def get_manuel_grading(course_id: int, activity_id: int, student_id: int):
-    path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
-
-    if not path.exists():
-        raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail=f"Student {course_id}/{activity_id}/{student_id} doesn't exist.",
-        )
-
-    try:
-        subprocess.run(
-            [f"otter export --filtering --pagebreaks {path}/*.ipynb"],
-            shell=True,
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except CalledProcessError as e:
-        raise HTTPException(status_code=400, detail=f"Failed to export: {e.stderr}")
+        raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
 
     return {"message": "success"}
 

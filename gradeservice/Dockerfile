@@ -17,7 +17,9 @@ RUN apt update && apt install -y docker-ce-cli
 
 # Add Pandoc
 RUN curl -fsSL https://github.com/jgm/pandoc/releases/download/3.0/pandoc-3.0-linux-amd64.tar.gz | tar -xvz
-ENV PATH="$PATH:pandoc-3.0/bin"
+ENV PATH="$PATH:/pandoc-3.0/bin"
+
+RUN apt-get install -y texlive-xetex
 
 WORKDIR /app
 
