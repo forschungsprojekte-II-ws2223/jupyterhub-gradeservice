@@ -6,13 +6,12 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 from fastapi import APIRouter, HTTPException, UploadFile
-
-# from otter.api import grade_submission
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 router = APIRouter()
 
 
+# create directory and otter assign
 @router.post("/{course_id}/{activity_id}", status_code=HTTP_201_CREATED)
 async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     path = Path(f"assignments/{course_id}/{activity_id}")
@@ -81,7 +80,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     try:
         subprocess.run(
             [
-                f"otter grade -p {submission_file_path} -a {path}/autograder/demo-autograder_*.zip --pdfs -v"
+                f"otter grade -p {submission_file_path} -a {path}/autograder/demo-autograder_*.zip -o {submission_path} --pdfs -v"
             ],
             shell=True,
             capture_output=True,
@@ -95,6 +94,32 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
 
 
 # Return grades TODO
-@router.get("/{course_id}/{activity_id}/{student_id}")
-async def get_graded_file(course_id: int, activity_id: int, student_id: int):
-    return {"message": "success return grade"}
+@router.get("results/{course_id}/{activity_id}/{student_id}")
+async def get_grades(course_id: int, activity_id: int, student_id: int):
+    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
+    print(submission_path)
+
+    result_path = submission_path.joinpath("*.csv")
+    print(result_path)
+    try:
+        with open(result_path, "rb") as fp:
+            s = base64.b64encode(fp.read())
+    except (OSError, HTTPException):
+        raise
+
+    return {f"grade for student {student_id}": s}
+
+
+# Return submission PDFs TODO
+@router.get("pdfs/{course_id}/{activity_id}/{student_id}")
+async def get_submissions_pdfs(course_id: int, activity_id: int, student_id: int):
+    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
+
+    try:
+        with open(submission_path.joinpath("submission_pdfs", "*.csv"), "rb") as fp:
+            s = base64.b64encode(fp.read())
+    except (OSError, HTTPException):
+        shutil.rmtree(submission_path)
+        raise
+
+    return {f"pdfs for student {student_id}": s}
