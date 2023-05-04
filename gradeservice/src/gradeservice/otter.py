@@ -93,31 +93,35 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     return {"message": "success"}
 
 
-# Return grades TODO
-@router.get("results/{course_id}/{activity_id}/{student_id}")
+# Assume that each student has one submission
+@router.get("/results/{course_id}/{activity_id}/{student_id}")
 async def get_grades(course_id: int, activity_id: int, student_id: int):
     submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
-    print(submission_path)
 
-    result_path = submission_path.joinpath("*.csv")
-    print(result_path)
+    result_path = submission_path.joinpath().glob('*.csv')
     try:
-        with open(result_path, "rb") as fp:
-            s = base64.b64encode(fp.read())
+        for file in result_path:
+            with open(submission_path.joinpath(file.name), "rb") as fp:
+                s = base64.b64encode(fp.read())
     except (OSError, HTTPException):
-        raise
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=f"{submission_path}",
+        )
 
     return {f"grade for student {student_id}": s}
 
 
-# Return submission PDFs TODO
-@router.get("pdfs/{course_id}/{activity_id}/{student_id}")
+# Assume that each student has one pdf for manuel grading
+@router.get("/pdfs/{course_id}/{activity_id}/{student_id}")
 async def get_submissions_pdfs(course_id: int, activity_id: int, student_id: int):
-    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
+    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}/submission_pdfs")
 
+    submission_path_temp = submission_path
     try:
-        with open(submission_path.joinpath("submission_pdfs", "*.csv"), "rb") as fp:
-            s = base64.b64encode(fp.read())
+        for file in submission_path_temp.joinpath().glob('*.pdf'):
+            with open(submission_path.joinpath(file.name), "rb") as fp:
+                s = base64.b64encode(fp.read())
     except (OSError, HTTPException):
         shutil.rmtree(submission_path)
         raise
