@@ -11,7 +11,11 @@
 ## Adding dependencies
 
 **TODO**
-...
+Open a \*.in file and write the dependency you need. Run:
+
+```sh
+pip-compile requirements-*.in
+```
 
 ## Run
 
