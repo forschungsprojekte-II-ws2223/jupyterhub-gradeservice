@@ -68,7 +68,11 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
         )
 
     submission_path = path.joinpath("submissions", str(student_id))
-    os.makedirs(submission_path, exist_ok=True)
+
+    if submission_path.exists():
+        shutil.rmtree(submission_path)
+
+    os.makedirs(submission_path)
 
     content = await file.read()
 
@@ -80,7 +84,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     try:
         subprocess.run(
             [
-                f"otter grade -p {submission_file_path} -a {path}/autograder/demo-autograder_*.zip -o {submission_path} --pdfs -v"
+                f"otter grade -p {submission_file_path} -a {path}/autograder/*-autograder_*.zip -o {submission_path} --pdfs -v"
             ],
             shell=True,
             capture_output=True,
@@ -90,40 +94,11 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     except CalledProcessError as e:
         raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
 
-    return {"message": "success"}
+    with open(f"{submission_path}/final_grades.csv", "r") as f:
+        res = f.read()
 
+    pdf = Path(file.filename).with_suffix(".pdf")
+    with open(f"{submission_path}/submission_pdfs/{pdf}", "rb") as fp:
+        s = base64.b64encode(fp.read())
 
-# Assume that each student has one submission
-@router.get("/results/{course_id}/{activity_id}/{student_id}")
-async def get_grades(course_id: int, activity_id: int, student_id: int):
-    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}")
-
-    result_path = submission_path.joinpath().glob('*.csv')
-    try:
-        for file in result_path:
-            with open(submission_path.joinpath(file.name), "rb") as fp:
-                s = base64.b64encode(fp.read())
-    except (OSError, HTTPException):
-        raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail=f"{submission_path}",
-        )
-
-    return {f"grade for student {student_id}": s}
-
-
-# Assume that each student has one pdf for manuel grading
-@router.get("/pdfs/{course_id}/{activity_id}/{student_id}")
-async def get_submissions_pdfs(course_id: int, activity_id: int, student_id: int):
-    submission_path = Path(f"assignments/{course_id}/{activity_id}/submissions/{student_id}/submission_pdfs")
-
-    submission_path_temp = submission_path
-    try:
-        for file in submission_path_temp.joinpath().glob('*.pdf'):
-            with open(submission_path.joinpath(file.name), "rb") as fp:
-                s = base64.b64encode(fp.read())
-    except (OSError, HTTPException):
-        shutil.rmtree(submission_path)
-        raise
-
-    return {f"pdfs for student {student_id}": s}
+    return {"result": res, "pdf": s}
