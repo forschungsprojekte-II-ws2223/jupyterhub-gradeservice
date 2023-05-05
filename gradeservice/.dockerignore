@@ -1,12 +1,14 @@
+.git/
 assignments/
 tests/
-docker/
-.pytest_cache/
-__pychache__/
-*.egg-info/
+
+**/.DS_Store
+**/.pytest_cache/
+**/__pycache__/
+**/*.egg-info/
 
 Dockerfile
-*.yml
-*.toml
-*.md
-*.in
+**/*.yml
+**/*.toml
+**/*.md
+**/*.in
