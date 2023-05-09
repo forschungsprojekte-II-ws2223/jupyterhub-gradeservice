@@ -30,4 +30,4 @@ WORKDIR /app
 COPY . .
 
 RUN pip install .
-CMD ["/bin/bash", "-c", "uvicorn gradeservice.main:app --reload --host 0.0.0.0 --port 5000"]
+CMD ["/bin/bash", "-c", "uvicorn gradeservice.main:app --host 0.0.0.0 --port 5000"]
