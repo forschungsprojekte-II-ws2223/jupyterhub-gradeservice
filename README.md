@@ -12,11 +12,17 @@ This folder contains a simple JupyterHub docker deployment, that uses a postgres
 1. Build the jupyterlab image
 
    ```shell
-   docker build ./jupyterhub_docker/jupyterlab -t jupyterlab
+   docker build ./jupyterlab -t jupyterlab
    ```
 
    This will take some time because of the dependencies in [requirements.txt](./jupyterlab/requirements.txt).
    You can do the next step while waiting for the image to be built.
+
+1. Pull the otter-grader docker image
+
+   ```sh
+   docker pull ucbdsinfra/otter-grader
+   ```
 
 1. Make sure to set secure passwords/secrets in the [.env](./.env) file for the following enviroment variables:
 
