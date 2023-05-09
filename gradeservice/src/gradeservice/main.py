@@ -2,9 +2,10 @@ import os
 import sys
 from pathlib import Path
 
-import gradeservice.otter as otter
 from fastapi import FastAPI
 from pydantic import BaseSettings
+
+import gradeservice.otter as otter
 
 
 class Settings(BaseSettings):
