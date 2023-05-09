@@ -25,6 +25,7 @@ RUN apt update && apt install --no-install-recommends -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install gradeservice
+ENV ASSIGNMENTS_PATH="/assignments"
 WORKDIR /app
 
 COPY . .

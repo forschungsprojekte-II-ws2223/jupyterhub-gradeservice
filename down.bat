@@ -1,4 +1,4 @@
-: Removes jupyterhub and jupyterhub-db containers and volumes
+: Removes jupyterhub, jupyterhub-db and gradeservice containers and volumes
 docker compose down -v
 
 : Removes user volumes

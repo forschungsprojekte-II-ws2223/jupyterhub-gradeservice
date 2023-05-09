@@ -15,7 +15,9 @@ services:
       - hub-db
     links:
       - hub-db
-    build: .
+    image: jupyterhub
+    build:
+      context: ./jupyterhub
     container_name: jupyterhub # container name needs to match c.JupyterHub.hub_ip in jupyterhub_config.py
     restart: unless-stopped
     volumes:
@@ -24,13 +26,25 @@ services:
     environment:
       DOCKER_JUPYTER_IMAGE: jupyterlab
       DOCKER_NETWORK_NAME: ${DOCKER_NETWORK_NAME}
-      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: hub-db
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       API_TOKEN: ${API_TOKEN}
     ports:
       - "8000:8000"
+
+  gradeservice:
+    image: gradeservice
+    build:
+      context: gradeservice
+    container_name: gradeservice
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "gradeservice_data:/assignments"
+    ports:
+      - "5000:5000"
 
 volumes:
   data:
@@ -38,6 +52,9 @@ volumes:
     driver: local
   db:
     name: jupyterhub_db
+    driver: local
+  gradeservice_data:
+    name: gradeservice_data
     driver: local
 
 networks:
