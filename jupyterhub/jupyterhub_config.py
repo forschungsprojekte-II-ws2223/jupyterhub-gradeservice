@@ -15,34 +15,40 @@
 import os
 import sys
 
-c = get_config()  # pyright: reportUndefinedVariable=false
-c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
-c.DockerSpawner.image = os.environ['DOCKER_JUPYTER_IMAGE']
+c = get_config()  # pyright: ignore[reportUndefinedVariable] # noqa: F821
 
-network_name = os.environ['DOCKER_NETWORK_NAME']
+network_name = os.environ["DOCKER_NETWORK_NAME"]
+notebook_dir = "/home/jovyan/work"
+
+c.JupyterHub.spawner_class = "dockerspawner.DockerSpawner"
+
+c.DockerSpawner.image = os.environ["DOCKER_JUPYTER_IMAGE"]
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
-c.DockerSpawner.extra_host_config = {'network_mode': network_name}
+c.DockerSpawner.extra_host_config = {"network_mode": network_name}
+c.DockerSpawner.notebook_dir = notebook_dir
+c.DockerSpawner.volumes = {"jupyterhub-user-{username}": notebook_dir}
+c.DockerSpawner.remove = True
+# c.Spawner.mem_limit = '2G'
 
-c.JupyterHub.hub_ip = 'jupyterhub'
+c.JupyterHub.hub_ip = "jupyterhub"
 c.JupyterHub.hub_port = 8080
 
-c.Spawner.args = [f'--NotebookApp.allow_origin=*']
+c.Spawner.args = ["--NotebookApp.allow_origin=*"]
 c.JupyterHub.tornado_settings = {
-    'cookie_options': {"SameSite": "None", "Secure": True},
-    'headers': {
-        'Content-Security-Policy': "frame-ancestors 'self' http://localhost:80 http://127.0.0.1:80 http://localhost:8000 http://127.0.0.1:8000"
-    }
+    "cookie_options": {"SameSite": "None", "Secure": True},
+    "headers": {
+        "Content-Security-Policy": "frame-ancestors 'self' http://localhost:80 http://127.0.0.1:80 http://localhost:8000 http://127.0.0.1:8000"
+    },
 }
 
 # Persist hub data on volume mounted inside container
-data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
+data_dir = os.environ.get("DATA_VOLUME_CONTAINER", "/data")
 
-c.JupyterHub.cookie_secret_file = os.path.join(
-    data_dir, 'jupyterhub_cookie_secret')
+c.JupyterHub.cookie_secret_file = os.path.join(data_dir, "jupyterhub_cookie_secret")
 
 # Redirect to JupyterLab, instead of the plain Jupyter notebook
-#c.Spawner.default_url = '/lab'
+# c.Spawner.default_url = '/lab'
 
 # Idle culler setup:
 # For further information about the available settings for idle culler check the following link:
@@ -70,28 +76,29 @@ c.JupyterHub.load_roles = [
         "services": [
             "service-admin",
         ],
-    }
+    },
 ]
 c.JupyterHub.services = [
     {
         "name": "jupyterhub-idle-culler-service",
         "command": [
             sys.executable,
-            "-m", "jupyterhub_idle_culler",
+            "-m",
+            "jupyterhub_idle_culler",
             "--timeout=3600",
         ],
     },
     {
         "name": "service-admin",
-        "api_token": os.environ['API_TOKEN'],
+        "api_token": os.environ["API_TOKEN"],
     },
 ]
 
 # Database setup
-c.JupyterHub.db_url = 'postgresql://postgres:{password}@{host}/{db}'.format(
-    host=os.environ['POSTGRES_HOST'],
-    password=os.environ['POSTGRES_PASSWORD'],
-    db=os.environ['POSTGRES_DB'],
+c.JupyterHub.db_url = "postgresql://postgres:{password}@{host}/{db}".format(
+    host=os.environ["POSTGRES_HOST"],
+    password=os.environ["POSTGRES_PASSWORD"],
+    db=os.environ["POSTGRES_DB"],
 )
 
 # Dummy authenticator. Enable this for testing only!
@@ -100,14 +107,16 @@ c.JupyterHub.db_url = 'postgresql://postgres:{password}@{host}/{db}'.format(
 # JWT Authenticator Setup
 # JSONWebTokenLocalAuthenticator provides local user creation
 c.LocalAuthenticator.create_system_users = True
-c.JupyterHub.authenticator_class = 'jwtauthenticator.jwtauthenticator.JSONWebTokenLocalAuthenticator'
+c.JupyterHub.authenticator_class = (
+    "jwtauthenticator.jwtauthenticator.JSONWebTokenLocalAuthenticator"
+)
 # The secrect key used to generate the given token
-c.JSONWebTokenAuthenticator.secret = os.environ['JWT_SECRET']
+c.JSONWebTokenAuthenticator.secret = os.environ["JWT_SECRET"]
 # The claim field contianing the Moodle user id
-c.JSONWebTokenAuthenticator.username_claim_field = 'name'
+c.JSONWebTokenAuthenticator.username_claim_field = "name"
 # This config option should match the aud field of the JSONWebToken, empty string to disable the validation of this field.
-c.JSONWebTokenAuthenticator.expected_audience = ''
+c.JSONWebTokenAuthenticator.expected_audience = ""
 # This will enable local user creation upon authentication, requires JSONWebTokenLocalAuthenticator
 c.JSONWebLocalTokenAuthenticator.create_system_users = True
 # Query param to retrieve JWT token
-c.JSONWebTokenAuthenticator.param_name = 'auth_token'
+c.JSONWebTokenAuthenticator.param_name = "auth_token"
