@@ -16,6 +16,7 @@ services:
       - 'mariadb_data:/bitnami/mariadb'
 
   moodle:
+    image: moodle
     build: .
     container_name: moodle
     restart: unless-stopped
