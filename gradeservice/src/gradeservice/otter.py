@@ -5,14 +5,18 @@ import subprocess
 from pathlib import Path
 from subprocess import CalledProcessError
 
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+
+from gradeservice.auth.auth_bearer import JWTBearer
 
 router = APIRouter()
 
 
 # create directory and otter assign
-@router.post("/{course_id}/{activity_id}", status_code=HTTP_201_CREATED)
+@router.post(
+    "/{course_id}/{activity_id}", dependencies=[Depends(JWTBearer())], status_code=HTTP_201_CREATED
+)
 async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     path = Path(f"assignments/{course_id}/{activity_id}")
 
@@ -57,7 +61,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     return {file.filename: s}
 
 
-@router.post("/{course_id}/{activity_id}/{student_id}")
+@router.post("/{course_id}/{activity_id}/{student_id}", dependencies=[Depends(JWTBearer())])
 async def submit_upload_file(course_id: int, activity_id: int, student_id: int, file: UploadFile):
     path = Path(f"assignments/{course_id}/{activity_id}")
 

@@ -179,6 +179,8 @@ pygments==2.14.0
     #   ipython
     #   nbconvert
     #   sphinx
+pyjwt==2.7.0
+    # via -r requirements-base.in
 pyparsing==3.0.9
     # via httplib2
 pyrsistent==0.19.3
@@ -187,6 +189,8 @@ python-dateutil==2.8.2
     # via
     #   jupyter-client
     #   pandas
+python-decouple==3.8
+    # via -r requirements-base.in
 python-dotenv==1.0.0
     # via uvicorn
 python-multipart==0.0.6
