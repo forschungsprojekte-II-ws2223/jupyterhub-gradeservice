@@ -189,8 +189,6 @@ python-dateutil==2.8.2
     # via
     #   jupyter-client
     #   pandas
-python-decouple==3.8
-    # via -r requirements-base.in
 python-dotenv==1.0.0
     # via uvicorn
 python-multipart==0.0.6

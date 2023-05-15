@@ -4,4 +4,3 @@ otter-grader
 nbconvert
 python-multipart
 PyJWT
-python-decouple
