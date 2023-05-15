@@ -5,5 +5,3 @@ COPY ./jupyter_notebook_config.py /etc/jupyter/
 COPY ./requirements.txt .
 RUN pip install -r ./requirements.txt --no-cache-dir
 RUN rm requirements.txt
-
-RUN jupyter serverextension enable nbgitpuller --sys-prefix

@@ -4,6 +4,5 @@ pandas
 scikit-learn
 scipy
 tensorflow
-nbgitpuller
 jupyterlab-language-pack-de-DE
 otter-grader
