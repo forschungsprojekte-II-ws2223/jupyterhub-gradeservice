@@ -179,6 +179,8 @@ pygments==2.14.0
     #   ipython
     #   nbconvert
     #   sphinx
+pyjwt==2.7.0
+    # via -r requirements-base.in
 pyparsing==3.0.9
     # via httplib2
 pyrsistent==0.19.3

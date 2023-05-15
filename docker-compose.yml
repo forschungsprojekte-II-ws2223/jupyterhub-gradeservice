@@ -40,6 +40,8 @@ services:
       context: gradeservice
     container_name: gradeservice
     restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "gradeservice_data:/assignments"
