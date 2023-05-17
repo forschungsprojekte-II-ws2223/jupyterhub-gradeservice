@@ -21,10 +21,9 @@ c.NotebookApp.open_browser = False
 c.FileContentsManager.delete_to_trash = False
 
 c.NotebookApp.tornado_settings = {
-    "cookie_options": {"SameSite": "None", "Secure": True},
     "headers": {
         "Content-Security-Policy": "frame-ancestors 'self' http://localhost:80 http://127.0.0.1:80 http://localhost:8000 http://127.0.0.1:8000"
     },
 }
-c.NotebookApp.disable_check_xsrf = True
-c.NotebookApp.terminals_enabled = False
+
+# c.NotebookApp.disable_check_xsrf = True
