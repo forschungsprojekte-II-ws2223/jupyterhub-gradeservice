@@ -29,14 +29,15 @@ c.DockerSpawner.extra_host_config = {"network_mode": network_name}
 c.DockerSpawner.notebook_dir = notebook_dir
 c.DockerSpawner.volumes = {"jupyterhub-user-{username}": notebook_dir}
 c.DockerSpawner.remove = True
-# c.Spawner.mem_limit = '2G'
 
 c.JupyterHub.hub_ip = "jupyterhub"
 c.JupyterHub.hub_port = 8080
 
-c.Spawner.args = ["--NotebookApp.allow_origin=*"]
+c.Spawner.args = [
+    "--NotebookApp.allow_origin=*",
+    "--LabApp.check_for_updates_class='jupyterlab.NeverCheckForUpdate'",
+]
 c.JupyterHub.tornado_settings = {
-    "cookie_options": {"SameSite": "None", "Secure": True},
     "headers": {
         "Content-Security-Policy": "frame-ancestors 'self' http://localhost:80 http://127.0.0.1:80 http://localhost:8000 http://127.0.0.1:8000"
     },
@@ -46,9 +47,6 @@ c.JupyterHub.tornado_settings = {
 data_dir = os.environ.get("DATA_VOLUME_CONTAINER", "/data")
 
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, "jupyterhub_cookie_secret")
-
-# Redirect to JupyterLab, instead of the plain Jupyter notebook
-# c.Spawner.default_url = '/lab'
 
 # Idle culler setup:
 # For further information about the available settings for idle culler check the following link:
@@ -67,7 +65,6 @@ c.JupyterHub.load_roles = [
     },
     {
         "name": "service-role",
-        # TODO: better scopes (not so much power for one token)
         "scopes": [
             "admin:users",
             "admin:servers",

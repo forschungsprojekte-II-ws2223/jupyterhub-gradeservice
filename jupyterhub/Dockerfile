@@ -1,4 +1,4 @@
-FROM jupyterhub/jupyterhub:3
+FROM jupyterhub/jupyterhub:4.0.0
 
 COPY ./jupyterhub_config.py .
 
