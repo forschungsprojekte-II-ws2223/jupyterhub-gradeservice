@@ -1,6 +1,6 @@
 services:
   hub-db:
-    image: postgres:alpine3.17
+    image: postgres:alpine3.18
     container_name: jupyterhub-db
     restart: unless-stopped
     environment:
