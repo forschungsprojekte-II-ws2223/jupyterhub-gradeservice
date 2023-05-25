@@ -73,7 +73,7 @@ code --install-extension ms-vscode-remote.remote-containers \
    pip install -e ".[dev]"
    ```
 
-### Run
+### Run Gradeservice locally
 
 Go to the `./gradeservice` directory. Start the api with:
 

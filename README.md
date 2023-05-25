@@ -50,6 +50,12 @@ The JupyterHub uses a json web token [authenticator](https://github.com/izihawa/
 - You can now add the token as a query parameter to the address that your JupyterHub is running on.
   For example: <http://127.0.0.1:8000/?auth_token=>{your token here}
 
+The Gradeservice can be tested with [Postman](https://www.postman.com).
+
+- Make a POST Request with <http://127.0.0.1:5000/>{coursename}/{studentname}
+- Use the created json web token for authorization as a Bearer Token.
+- In `Body` use '_file_' as a `KEY` name and a file of your choice as `VALUE`. The file must have the format '_.ipynb_'.
+
 ## Manage dependencies
 
 ### Update docker dependencies
