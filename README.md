@@ -1,6 +1,6 @@
 # JupyterHub Docker with an Autograder
 
-This repository contains two docker deplpyments.
+This repository contains two docker deployments.
 First one is a simple JupyterHub docker deployment, that uses a postgres database and spawns single-user Jupyter notebooks as docker containers.
 Second one is an autograder as an API docker deployment, which is based on [ottergrader](https://otter-grader.readthedocs.io/en/latest/).
 
