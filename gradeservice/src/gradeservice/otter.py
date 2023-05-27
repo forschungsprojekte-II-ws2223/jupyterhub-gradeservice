@@ -51,13 +51,33 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         except CalledProcessError as e:
             raise HTTPException(status_code=400, detail=f"Failed to create assignment: {e.stderr}")
 
+        try:
+            subprocess.run(
+                [f"otter run -a {path}/autograder/*-autograder_*.zip -o {path} empty.ipynb"],
+                shell=True,
+                capture_output=True,
+                check=True,
+                text=True,
+            )
+        except CalledProcessError as e:
+            raise HTTPException(status_code=400, detail=f"Failed to submit test assignment: {e.stderr}")
+
+        with open(path.joinpath(path, "results.json"), "r") as fp:
+            points = {}
+            results = json.load(fp)
+            results = results['tests']
+            for test_case in results:
+                if 'max_score' in test_case:
+                    points[test_case['name']] = test_case['max_score']
+
+
         with open(path.joinpath("student", file.filename), "rb") as fp:
             s = base64.b64encode(fp.read())
     except (OSError, HTTPException):
         shutil.rmtree(path)
         raise
 
-    return {file.filename: s}
+    return {file.filename: s, "points": points}
 
 
 @router.post("/{course_id}/{activity_id}/{student_id}")
