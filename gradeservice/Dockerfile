@@ -13,7 +13,6 @@ ENV ASSIGNMENTS_PATH="/assignments"
 WORKDIR /app
 
 COPY . .
-#COPY empty.ipynb /app
 
 RUN pip install .
 CMD ["/bin/bash", "-c", "uvicorn gradeservice.main:app --host 0.0.0.0 --port 5000"]
