@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 import shutil
 import subprocess
@@ -41,7 +42,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
         try:
             subprocess.run(
-                [f"otter assign {file_path} {path}"],
+                [f"otter assign --no-pdfs {file_path} {path}"],
                 shell=True,
                 capture_output=True,
                 check=True,
@@ -86,7 +87,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     try:
         subprocess.run(
             [
-                f"otter grade -p {submission_file_path} -a {path}/autograder/*-autograder_*.zip -o {submission_path} --pdfs -v"
+                f"otter run -a {path}/autograder/*-autograder_*.zip -o {submission_path} -v {submission_file_path}"
             ],
             shell=True,
             capture_output=True,
@@ -96,11 +97,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
     except CalledProcessError as e:
         raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
 
-    with open(f"{submission_path}/final_grades.csv", "r") as f:
-        res = f.read()
+    with open(f"{submission_path}/results.json", "r") as f:
+        res = json.load(f)
 
-    pdf = Path(file.filename).with_suffix(".pdf")
-    with open(f"{submission_path}/submission_pdfs/{pdf}", "rb") as fp:
-        s = base64.b64encode(fp.read())
-
-    return {"result": res, "pdf": s}
+    return res
