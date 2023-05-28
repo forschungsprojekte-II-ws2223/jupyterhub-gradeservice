@@ -51,6 +51,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         except CalledProcessError as e:
             raise HTTPException(status_code=400, detail=f"Failed to create assignment: {e.stderr}")
 
+        # workaround to get max points for each question when creating an assignment by submitting an empty file
         try:
             subprocess.run(
                 [f"otter run -a {path}/autograder/*-autograder_*.zip -o {path} empty.ipynb"],
@@ -62,13 +63,17 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         except CalledProcessError as e:
             raise HTTPException(status_code=400, detail=f"Failed to submit test assignment: {e.stderr}")
 
+        # reading the results and keeping the question name, max points and total points
         with open(path.joinpath(path, "results.json"), "r") as fp:
             points = {}
             results = json.load(fp)
             results = results['tests']
+            total_points = 0;
             for test_case in results:
                 if 'max_score' in test_case:
                     points[test_case['name']] = test_case['max_score']
+                    total_points += test_case['max_score']
+            points["total"] = total_points
 
 
         with open(path.joinpath("student", file.filename), "rb") as fp:
