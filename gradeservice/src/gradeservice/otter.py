@@ -132,6 +132,11 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
         raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
 
     with open(f"{submission_path}/results.json", "r") as f:
-        res = json.load(f)
+        results = json.load(f)
+        results = results['tests']
+        points = []
+        for test_case in results:
+            if 'max_score' in test_case:
+                points.append(test_case['score'])
 
-    return res
+    return points
