@@ -61,20 +61,20 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
                 text=True,
             )
         except CalledProcessError as e:
-            raise HTTPException(status_code=400, detail=f"Failed to submit test assignment: {e.stderr}")
+            raise HTTPException(
+                status_code=400, detail=f"Failed to submit test assignment: {e.stderr}"
+            )
 
         # reading the results and keeping the question name, max points and total points
         with open(path.joinpath(path, "results.json"), "r") as fp:
-            points = {}
+            points = []
             results = json.load(fp)
-            results = results['tests']
-            total_points = 0;
+            results = results["tests"]
+            total_points = 0
             for test_case in results:
-                if 'max_score' in test_case:
-                    points[test_case['name']] = test_case['max_score']
-                    total_points += test_case['max_score']
-            points["total"] = total_points
-
+                if "max_score" in test_case:
+                    points.append(test_case["max_score"])
+                    total_points += test_case["max_score"]
 
         with open(path.joinpath("student", file.filename), "rb") as fp:
             s = base64.b64encode(fp.read())
@@ -82,7 +82,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         shutil.rmtree(path)
         raise
 
-    return {file.filename: s, "points": points}
+    return {file.filename: s, "total": total_points, "points": points}
 
 
 @router.post("/{course_id}/{activity_id}/{student_id}")
