@@ -1,5 +1,20 @@
 # Dev Environment Setup
 
+<details>
+  <summary>Table of Content</summary>
+
+> 1. [Prerequesites](#1-prerequesites)
+> 1. [Moodle and Jupyterhub setup](#2-moodle-and-jupyterhub-setup)
+> 1. [VS Code Setup](#3-vs-code-setup)
+> 1. [Gradeservice Setup](#4-gradeservice-setup)
+> 1. [Attatch to moodle container and install extensions](#5-attatch-to-moodle-container-and-install-extensions)
+> 1. [Using the Moodle and JupyterHub](#6-using-the-moodle-and-jupyterhub)
+> 1. [Further reading/information](#7-further-readinginformation)
+
+</details>
+
+---
+
 ## 1. Prerequesites
 
 Install the following tools:
@@ -12,9 +27,11 @@ Install the following tools:
 Build and start the Moodle and Jupyterhub containers by running these two commands:
 
 ```sh
-docker-compose -f setup/jupyterhub_docker/docker-compose.yml up -d --build
-docker-compose -f setup/moodle_docker/docker-compose.yml up -d --build
+docker-compose -f jupyterhub-gradeservice/docker-compose.yml up -d --build
+docker-compose -f jupyterhub-gradeservice/moodle_docker/docker-compose.yml up -d --build
 ```
+
+Do **NOT** forget to build the jupyterlab image. Futher information in [README.md](README.md)
 
 ## 3. VS Code Setup
 
@@ -46,7 +63,35 @@ code --install-extension ms-vscode-remote.remote-containers \
   --install-extension davidanson.vscode-markdownlint
 ```
 
-## 4. Attatch to moodle container and install extensions
+## 4. Gradeservice Setup
+
+1. Make sure you have Python >= 3.11 installed
+1. Open up a terminal window and `cd` into the _gradeservice_ folder
+1. Install dependencies:
+
+   ```sh
+   pip install -e ".[dev]"
+   ```
+
+### Run Gradeservice locally
+
+Go to the `./gradeservice` directory. Start the api with:
+
+```sh
+uvicorn gradeservice.main:app --reload
+```
+
+### Adding dependencies
+
+1. Install the dependency with pip
+1. Open `requirements-(dev|base).in` file and add the dependency you need.
+1. Compile the .in file to .txt:
+
+   ```sh
+   pip-compile requirements-(dev|base).in
+   ```
+
+## 5. Attatch to moodle container and install extensions
 
 - Open up VS Code
 - Click on the green icon at the bottom left of the window
@@ -65,7 +110,7 @@ code --install-extension ms-vscode-remote.remote-containers \
 
 Follow this guide for sharing git credentials with the container: <https://code.visualstudio.com/docs/devcontainers/containers#_sharing-git-credentials-with-your-container>
 
-After you have successfuly set up git, you can clone the repository into the moddle plugin directory:  
+After you have successfuly set up git, you can clone the repository into the moddle plugin directory:
 Open the VS Code command line by pressing `Ctrl+J` (Windows, Linux) or `⌘+J` (MacOS) and run the following commands.
 
 ```sh
@@ -98,17 +143,17 @@ code .
 
 You can now close the old window.
 
-## 5. Using the Moodle and JupyterHub
+## 6. Using the Moodle and JupyterHub
 
-Moodle is running on <http://127.0.0.1:80>, the default admin username is `user` and password is `bitnami`.  
-Upon loging in to moodle for the first time you should see the installation screen for our plugin.  
+Moodle is running on <http://127.0.0.1:80>, the default admin username is `user` and password is `bitnami`.
+Upon loging in to moodle for the first time you should see the installation screen for our plugin.
 The JupyterHub is running on <http://127.0.0.1:8000>.
 
-## Further reading/information
+## 7. Further reading/information
 
-[Learn Visual Studio Code in 7min (Official Beginner Tutorial)](https://code.visualstudio.com/docs/introvideos/basics)  
-[Using Git source control in VS Code](https://code.visualstudio.com/docs/sourcecontrol/overview)  
-[VS Code Documentation](https://code.visualstudio.com/docs)  
-[DevContainers Documentation](https://code.visualstudio.com/docs/devcontainers/containers)  
-[Keybind Cheat Sheet Windows](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf)  
+[Learn Visual Studio Code in 7min (Official Beginner Tutorial)](https://code.visualstudio.com/docs/introvideos/basics)
+[Using Git source control in VS Code](https://code.visualstudio.com/docs/sourcecontrol/overview)
+[VS Code Documentation](https://code.visualstudio.com/docs)
+[DevContainers Documentation](https://code.visualstudio.com/docs/devcontainers/containers)
+[Keybind Cheat Sheet Windows](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf)
 [Keybind Cheat Sheet MacOS](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf)
