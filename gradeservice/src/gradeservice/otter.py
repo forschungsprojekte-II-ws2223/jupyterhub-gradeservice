@@ -97,7 +97,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
 
 @router.post("/{course_id}/{activity_id}/{student_id}")
-async def submit_upload_file(course_id: int, activity_id: int, student_id: int, file: UploadFile):
+async def submit_upload_file(course_id: int, activity_id: int, student_id: str, file: UploadFile):
     path = Path(f"{settings.assignments_path}/{course_id}/{activity_id}")
 
     if not path.exists():
@@ -106,7 +106,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: int, 
             detail=f"Activity {course_id}/{activity_id} doesn't exist.",
         )
 
-    submission_path = path.joinpath("submissions", str(student_id))
+    submission_path = path.joinpath("submissions", student_id)
 
     if submission_path.exists():
         shutil.rmtree(submission_path)
