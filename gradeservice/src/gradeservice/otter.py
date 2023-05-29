@@ -59,7 +59,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         if not autograder_exists:
             raise HTTPException(
                 status_code=400,
-                detail=f"Failed to create assignment: Your file does not match the Otter-Grader assignment syntax.",
+                detail="Failed to create assignment: Your file does not match the Otter-Grader assignment syntax.",
             )
 
         # workaround to get max points for each question when creating an assignment by submitting an empty file
@@ -78,7 +78,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
         # reading the results and keeping the question name, max points and total points
         with open(path.joinpath("results.json"), "r") as fp:
-            points = {}
+            points = []
             results = json.load(fp)
             results = results["tests"]
             total_points = 0
