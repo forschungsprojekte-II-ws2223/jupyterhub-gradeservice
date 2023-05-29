@@ -71,9 +71,9 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
                 check=True,
                 text=True,
             )
-        except CalledProcessError as e:
+        except CalledProcessError as err:
             raise HTTPException(
-                status_code=400, detail=f"Failed to submit test assignment: {e.stderr}"
+                status_code=400, detail=f"Failed to submit test assignment: {err.stderr}"
             )
 
         # reading the results and keeping the question name, max points and total points
