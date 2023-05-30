@@ -36,7 +36,6 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
     try:
         contents = await file.read()
-
         with open(file_path, "wb") as fp:
             fp.write(contents)
 
@@ -78,14 +77,14 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
 
         # reading the results and keeping the question name, max points and total points
         with open(path.joinpath("results.json"), "r") as fp:
-            points = []
-            results = json.load(fp)
-            results = results["tests"]
-            total_points = 0
+            results = json.load(fp)["tests"]
+            points = {}
+            total_points, i = 0, 1
             for test_case in results:
                 if "max_score" in test_case:
-                    points.append(test_case["max_score"])
+                    points[i] = test_case["max_score"]
                     total_points += test_case["max_score"]
+                    i += 1
 
         with open(path.joinpath("student", file.filename), "rb") as fp:
             s = base64.b64encode(fp.read())
@@ -107,16 +106,12 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
         )
 
     submission_path = path.joinpath("submissions", student_id)
-
     if submission_path.exists():
         shutil.rmtree(submission_path)
-
     os.makedirs(submission_path)
 
     content = await file.read()
-
     submission_file_path = submission_path.joinpath(file.filename)
-
     with open(submission_file_path, mode="wb") as f:
         f.write(content)
 
@@ -134,11 +129,13 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
         raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
 
     with open(f"{submission_path}/results.json", "r") as f:
-        results = json.load(f)
-        results = results["tests"]
-        points = []
+        results = json.load(f)["tests"]
+        points = {}
+        total_points, i = 0, 1
         for test_case in results:
             if "max_score" in test_case:
-                points.append(test_case["score"])
+                points[i] = test_case["score"]
+                total_points += test_case["score"]
+                i += 1
 
-    return points
+    return {"total": total_points, "points": points}
