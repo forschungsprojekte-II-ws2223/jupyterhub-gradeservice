@@ -130,12 +130,14 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
 
     with open(f"{submission_path}/results.json", "r") as f:
         results = json.load(f)["tests"]
-        points = {}
-        total_points, i = 0, 1
+        score = {}
+        output = {}
+        total_score, i = 0, 1
         for test_case in results:
             if "max_score" in test_case:
-                points[i] = test_case["score"]
-                total_points += test_case["score"]
+                score[i] = test_case["score"]
+                output[i] = test_case["output"]
+                total_score += test_case["score"]
                 i += 1
 
-    return {"total": total_points, "points": points}
+    return {"total": total_score, "points": score, "output": output}
