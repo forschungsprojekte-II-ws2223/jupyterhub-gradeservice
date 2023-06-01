@@ -4,7 +4,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from subprocess import CalledProcessError
+from subprocess import CalledProcessError, TimeoutExpired
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
@@ -124,20 +124,23 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
             capture_output=True,
             check=True,
             text=True,
+            timeout=settings.grading_timeout,
         )
     except CalledProcessError as e:
         raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
+    except TimeoutExpired:
+        raise HTTPException(status_code=408, detail="Notebook grading timed out.")
 
     with open(f"{submission_path}/results.json", "r") as f:
         results = json.load(f)["tests"]
-        score = {}
-        output = {}
-        total_score, i = 0, 1
-        for test_case in results:
-            if "max_score" in test_case:
-                score[i] = test_case["score"]
-                output[i] = test_case["output"]
-                total_score += test_case["score"]
-                i += 1
+
+    score, output = {}, {}
+    total_score, i = 0, 1
+    for test_case in results:
+        if "max_score" in test_case:
+            score[i] = test_case["score"]
+            output[i] = test_case["output"]
+            total_score += test_case["score"]
+            i += 1
 
     return {"total": total_score, "points": score, "output": output}

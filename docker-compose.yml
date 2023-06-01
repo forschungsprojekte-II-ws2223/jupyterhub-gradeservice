@@ -42,6 +42,7 @@ services:
     restart: unless-stopped
     environment:
       JWT_SECRET: ${JWT_SECRET}
+      GRADING_TIMEOUT: ${GRADING_TIMEOUT}
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "gradeservice_data:/assignments"
