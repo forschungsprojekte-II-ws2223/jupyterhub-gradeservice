@@ -6,8 +6,7 @@ import subprocess
 from pathlib import Path
 from subprocess import CalledProcessError, TimeoutExpired
 
-from fastapi import APIRouter, HTTPException, UploadFile
-from starlette.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from fastapi import APIRouter, HTTPException, UploadFile, Response, status
 
 from .config import settings
 
@@ -15,14 +14,14 @@ router = APIRouter()
 
 
 # create directory and otter assign
-@router.post("/{course_id}/{activity_id}", status_code=HTTP_201_CREATED)
+@router.post("/{course_id}/{activity_id}", status_code=status.HTTP_201_CREATED)
 async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
     path = Path(f"{settings.assignments_path}/{course_id}/{activity_id}")
 
     file_path = path.joinpath(file.filename)
     if file_path.suffix != ".ipynb":
         raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"The file {file.filename} is not a .ipynb file.",
         )
 
@@ -30,7 +29,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
         os.makedirs(path)
     except OSError:
         raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Activity {course_id}/{activity_id} already exists.",
         )
 
@@ -48,7 +47,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
                 text=True,
             )
         except CalledProcessError as e:
-            raise HTTPException(status_code=400, detail=f"Failed to create assignment: {e.stderr}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to create assignment: {e.stderr}")
 
         # raise exception if autograder zip was not generated
         autograder_exists = False
@@ -57,7 +56,7 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
             break
         if not autograder_exists:
             raise HTTPException(
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Failed to create assignment: Your file does not match the Otter-Grader assignment syntax.",
             )
 
@@ -101,7 +100,7 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
 
     if not path.exists():
         raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Activity {course_id}/{activity_id} doesn't exist.",
         )
 
@@ -127,9 +126,9 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
             timeout=settings.grading_timeout,
         )
     except CalledProcessError as e:
-        raise HTTPException(status_code=400, detail=f"Failed to grade assignment: {e.stderr}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to grade assignment: {e.stderr}")
     except TimeoutExpired:
-        raise HTTPException(status_code=408, detail="Notebook grading timed out.")
+        raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="Notebook grading timed out.")
 
     with open(f"{submission_path}/results.json", "r") as f:
         results = json.load(f)["tests"]
@@ -144,3 +143,12 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
             i += 1
 
     return {"total": total_score, "points": score, "output": output}
+
+# delete assignment directory
+@router.delete("/{course_id}/{activity_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_assignment(course_id: int, activity_id: int, response: Response):
+    path = Path(f"{settings.assignments_path}/{course_id}/{activity_id}")
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    else:
+        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail=f"The assignment you tried to delete does not exist.")
