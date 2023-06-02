@@ -9,6 +9,7 @@ RUN apt update && apt install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install gradeservice
+ENV ASSIGNMENTS_PATH="/assignments"
 WORKDIR /app
 
 COPY . .
