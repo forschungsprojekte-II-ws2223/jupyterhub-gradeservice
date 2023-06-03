@@ -20,12 +20,6 @@ Second one is an autograder as an API docker deployment, which is based on [otte
    This will take some time because of the dependencies in [requirements.txt](./jupyterlab/requirements.txt).
    You can do the next step while waiting for the image to be built.
 
-1. Pull the otter-grader docker image to avoid long loading times during the first time grading
-
-   ```sh
-   docker pull ucbdsinfra/otter-grader
-   ```
-
 1. Make sure to set secure passwords/secrets in the [.env](./.env) file for the following enviroment variables:
 
    - `POSTGRES_PASSWORD`
@@ -48,17 +42,18 @@ Run `docker compose down` if you want to delete the containers. The data volumes
 
 ## Testing
 
-The JupyterHub uses a json web token [authenticator](https://github.com/izihawa/jwtauthenticator_v2).
+The JupyterHub and Gradeservice API use a json web token [authenticator](https://github.com/izihawa/jwtauthenticator_v2).
+
+Jupyterhub:
 
 - To test this setup, you can create a json web token on this [site](https://jwt.io/#debugger-io).
   In the 'verify signature' field the secret can stay 'your-256-bit-secret' as it is (the secret should match the one in the [environment file](.env)).
-  The 'secret base64 encoded' should **NOT** be checked.
 - You can now add the token as a query parameter to the address that your JupyterHub is running on.
   For example: <http://127.0.0.1:8000/?auth_token=>{your token here}
 
-The Gradeservice can be tested with [Postman](https://www.postman.com).
+Gradeservice:
 
-- Make a POST Request with <http://127.0.0.1:5000/>{coursename}/{studentname}
+- Make a POST Request with <http://127.0.0.1:5000/>{courseid}/{activityid}/{studentname}
 - Use the created json web token for authorization as a Bearer Token.
 - In `Body` use '_file_' as a `KEY` name and a file of your choice as `VALUE`. The file must have the format '_.ipynb_'.
 
