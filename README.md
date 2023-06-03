@@ -1,9 +1,5 @@
 # JupyterHub Docker with an Autograder
 
-This repository contains two docker deployments.
-First one is a simple JupyterHub docker deployment, that uses a postgres database and spawns single-user Jupyter notebooks as docker containers.
-Second one is an autograder as an API docker deployment, which is based on [ottergrader](https://otter-grader.readthedocs.io/en/latest/).
-
 ## Setup
 
 1. If you want to use this setup with a Moodle that is not running on your local machine, the URL of the Moodle instance needs to be added to the following settings files:
