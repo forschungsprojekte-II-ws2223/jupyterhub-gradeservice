@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from subprocess import CalledProcessError, TimeoutExpired
 
-from fastapi import APIRouter, HTTPException, UploadFile, Response, status
+from fastapi import APIRouter, HTTPException, UploadFile, status
 
 from .config import settings
 
@@ -47,7 +47,10 @@ async def create_assignment(course_id: int, activity_id: int, file: UploadFile):
                 text=True,
             )
         except CalledProcessError as e:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to create assignment: {e.stderr}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Failed to create assignment: {e.stderr}",
+            )
 
         autograder_exists = False
         for e in path.joinpath("autograder").glob("*-autograder_*.zip"):
@@ -125,9 +128,14 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
             timeout=settings.grading_timeout,
         )
     except CalledProcessError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to grade assignment: {e.stderr}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to grade assignment: {e.stderr}",
+        )
     except TimeoutExpired:
-        raise HTTPException(status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="Notebook grading timed out.")
+        raise HTTPException(
+            status_code=status.HTTP_408_REQUEST_TIMEOUT, detail="Notebook grading timed out."
+        )
 
     with open(f"{submission_path}/results.json", "r") as f:
         results = json.load(f)["tests"]
@@ -143,11 +151,15 @@ async def submit_upload_file(course_id: int, activity_id: int, student_id: str, 
 
     return {"total": total_score, "points": score, "output": output}
 
+
 # delete assignment directory
 @router.delete("/{course_id}/{activity_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_assignment(course_id: int, activity_id: int, response: Response):
+async def remove_assignment(course_id: int, activity_id: int):
     path = Path(f"{settings.assignments_path}/{course_id}/{activity_id}")
     if os.path.isdir(path):
         shutil.rmtree(path)
     else:
-        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail=f"The assignment you tried to delete does not exist.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The assignment you tried to delete does not exist.",
+        )
