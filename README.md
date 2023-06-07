@@ -1,4 +1,4 @@
-# JupyterHub Docker with an Autograder
+# JupyterHub and Otter-Grader REST API
 
 ## Setup
 
@@ -38,7 +38,7 @@ Run `docker compose down` if you want to delete the containers. The data volumes
 
 ## Testing
 
-The JupyterHub and Gradeservice API use a json web token [authenticator](https://github.com/izihawa/jwtauthenticator_v2).
+The JupyterHub and Gradeservice API use a json web tokens for authentication.
 
 Jupyterhub:
 
@@ -63,6 +63,10 @@ Gradeservice:
 - Run `docker-compose up -d` and wait for the containers to be recreated.
 - Then the containers can be used again.
 
+### Manage JupyterHub dependencies
+
+External dependencies for the JupyterLab containers are managed through the [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/). This way one can specify certain versions, upgrade versions or add additional libraries.
+
 ### Update Gradeservice dependencies
 
 1. Go to `./gradeservice` directory
@@ -73,7 +77,3 @@ Gradeservice:
    ```sh
    pip-compile requirements-base.in
    ```
-
-### Manage python dependencies
-
-External dependencies for the JupyterLab containers are managed through the [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/). This way one can specify certain versions, upgrade versions or add additional libraries.
