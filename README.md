@@ -2,10 +2,9 @@
 
 ## Setup
 
-1. If you want to use this setup with a Moodle that is not running on your local machine, the URL of the Moodle instance needs to be added to the following settings files:
-
-   - [jupyterhub_config.py](./jupyterhub/jupyterhub_config.py?plain=1#L42) in line 42
-   - [jupyter_notebook_config.py](./jupyterlab/jupyter_notebook_config.py?plain=1#L25) in line 25.
+1. If you want to use this setup with a Moodle that is not running on your local machine, the URL of the Moodle instance needs to be appended to the value of `Content-Security-Policy` in the object `headers` in the variable `c.NotebookApp.tornado_settings` in the following settings files (if you do this after already starting the Docker containers, a restart of the containers is required):
+   - [jupyterhub_config.py](./jupyterhub/jupyterhub_config.py?plain=1#L42)
+   - [jupyter_notebook_config.py](./jupyterlab/jupyter_notebook_config.py?plain=1#L25)
 
 1. Build the jupyterlab image
 
