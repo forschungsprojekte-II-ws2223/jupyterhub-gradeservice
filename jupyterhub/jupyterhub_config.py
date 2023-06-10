@@ -47,7 +47,7 @@ c.JupyterHub.tornado_settings = {
 }
 
 # Persist hub data on volume mounted inside container
-data_dir = os.environ.get("DATA_VOLUME_CONTAINER", "/data")
+data_dir = "/data"
 
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, "jupyterhub_cookie_secret")
 
@@ -90,7 +90,7 @@ c.JupyterHub.services = [
     },
     {
         "name": "service-admin",
-        "api_token": os.environ["API_TOKEN"],
+        "api_token": os.environ["JUPYTER_API_TOKEN"],
     },
 ]
 

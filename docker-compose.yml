@@ -4,11 +4,11 @@ services:
     container_name: jupyterhub-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      PGDATA: ${DB_VOLUME_CONTAINER}
+      POSTGRES_DB: jupyterhub
+      PGDATA: /var/lib/postgresql/data
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - "db:${DB_VOLUME_CONTAINER}"
+      - "db:/var/lib/postgresql/data"
 
   hub:
     depends_on:
@@ -22,15 +22,15 @@ services:
     restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "data:${DATA_VOLUME_CONTAINER}"
+      - "data:/data"
     environment:
       DOCKER_JUPYTER_IMAGE: jupyterlab
-      DOCKER_NETWORK_NAME: ${DOCKER_NETWORK_NAME}
+      DOCKER_NETWORK_NAME: jupyterhub-network
       POSTGRES_HOST: hub-db
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: jupyterhub
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      API_TOKEN: ${API_TOKEN}
+      API_TOKEN: ${JUPYTER_API_TOKEN}
     ports:
       - "8000:8000"
 
@@ -63,4 +63,4 @@ volumes:
 
 networks:
   default:
-    name: ${DOCKER_NETWORK_NAME}
+    name: jupyterhub-network
