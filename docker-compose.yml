@@ -30,7 +30,7 @@ services:
       POSTGRES_DB: jupyterhub
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      API_TOKEN: ${JUPYTER_API_TOKEN}
+      JUPYTER_API_TOKEN: ${JUPYTER_API_TOKEN}
     ports:
       - "8000:8000"
 
