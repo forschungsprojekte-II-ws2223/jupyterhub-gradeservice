@@ -14,6 +14,7 @@
 
 import os
 import sys
+import urllib.parse
 
 c = get_config()  # pyright: ignore[reportUndefinedVariable] # noqa: F821
 
@@ -96,7 +97,7 @@ c.JupyterHub.services = [
 # Database setup
 c.JupyterHub.db_url = "postgresql://postgres:{password}@{host}/{db}".format(
     host=os.environ["POSTGRES_HOST"],
-    password=os.environ["POSTGRES_PASSWORD"],
+    password=urllib.parse.quote(os.environ["POSTGRES_PASSWORD"]),
     db=os.environ["POSTGRES_DB"],
 )
 
