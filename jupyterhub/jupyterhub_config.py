@@ -33,6 +33,8 @@ c.DockerSpawner.remove = True
 c.JupyterHub.hub_ip = "jupyterhub"
 c.JupyterHub.hub_port = 8080
 
+c.JupyterHub.bind_url = "http://:8000/jhub"
+
 c.Spawner.args = [
     "--NotebookApp.allow_origin=*",
     "--LabApp.check_for_updates_class='jupyterlab.NeverCheckForUpdate'",
