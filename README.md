@@ -3,6 +3,7 @@
 ## Setup
 
 1. If you want to use this setup with a Moodle that is not running on your local machine, the URL of the Moodle instance needs to be appended to the value of `Content-Security-Policy` in the object `headers` in the variable `c.NotebookApp.tornado_settings` in the following settings files (if you do this after already starting the Docker containers, a restart of the containers is required):
+
    - [jupyterhub_config.py](./jupyterhub/jupyterhub_config.py?plain=1#L42)
    - [jupyter_notebook_config.py](./jupyterlab/jupyter_notebook_config.py?plain=1#L25)
 
@@ -62,9 +63,16 @@ Gradeservice:
 - Run `docker-compose up -d` and wait for the containers to be recreated.
 - Then the containers can be used again.
 
-### Manage JupyterHub dependencies
+### Manage JupyterLab dependencies
 
-External dependencies for the JupyterLab containers are managed through the [requirements.txt](https://pip.pypa.io/en/stable/reference/requirements-file-format/). This way one can specify certain versions, upgrade versions or add additional libraries.
+1. Go to `./jupyterlab` directory
+1. Install the dependency with pip
+1. Open `requirements.in` file and add the dependency you need.
+1. Compile the .in file to .txt (requires `pip install pip-tools` ):
+
+   ```sh
+   pip-compile requirements.in
+   ```
 
 ### Update Gradeservice dependencies
 
