@@ -6,7 +6,7 @@ Install requirements (requires python 3.11):
 `pip install -e '.[dev]'`
 
 Start the api (without jwt authentication):
-`NO_AUTH=true uvicorn gradeservice.main:app --reload --port 5000"`
+`NO_AUTH=true uvicorn gradeservice.main:app --reload --port 5000`
 
 ## Environment variables
 
