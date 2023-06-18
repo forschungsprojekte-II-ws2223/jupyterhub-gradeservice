@@ -23,10 +23,13 @@ if not os.access(settings.assignments_path, os.W_OK) or not os.access(
     print(f'No read/write acces in directory "{settings.assignments_path}"!')
     sys.exit()
 
-if settings.jwt_secret == "":
+if (not settings.no_auth) and settings.jwt_secret == "":
     print("No jwt secret set!")
     sys.exit()
 
 app = FastAPI()
-app.add_middleware(BaseHTTPMiddleware, dispatch=authorization_middleware)
+
+if not settings.no_auth:
+    app.add_middleware(BaseHTTPMiddleware, dispatch=authorization_middleware)
+
 app.include_router(router)
