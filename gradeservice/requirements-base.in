@@ -1,6 +1,5 @@
 fastapi
 uvicorn[standard]
 otter-grader
-nbconvert
 python-multipart
 PyJWT

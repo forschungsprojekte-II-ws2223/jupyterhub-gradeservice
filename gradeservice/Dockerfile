@@ -4,7 +4,7 @@ RUN apt update && apt install -y --no-install-recommends \
     curl \
     ca-certificates \
     gpg \
-    pandoc \
+    #pandoc \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -13,5 +13,5 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install .
+RUN pip install . --no-cache-dir
 CMD ["/bin/bash", "-c", "uvicorn gradeservice.main:app --host 0.0.0.0 --port 5000"]

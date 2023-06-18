@@ -6,9 +6,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 RUN composer global require moodlehq/moodle-cs --no-interaction
 ENV PATH="/.composer/vendor/bin:$PATH"
-# Install node and npm
-# Installing a specific version of node directly is dificult. Use `nvm` to
-# install it (which installs both `node` and `npm`)
 
 ENV NODE_VERSION 16.20.0
 ENV NVM_DIR /usr/local/nvm
